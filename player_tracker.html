@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Conquest Tracker</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --border-radius: 8px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 500px;
+            margin-inline: auto;
+        }
+
+        h1, h2, h3 { margin: 0; }
+        
+        .section {
+            background-color: var(--card-bg);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* HP Section */
+        .hp-display {
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .hp-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 16px 8px;
+            font-size: 1.1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            touch-action: manipulation;
+        }
+        button:active { opacity: 0.8; }
+        .btn-red { background-color: var(--accent-red); }
+        .btn-green { background-color: var(--accent-green); }
+        .btn-blue { background-color: var(--accent-blue); }
+        button:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+
+        /* Toggles */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .toggle-row:last-child { border-bottom: none; }
+        .toggle-btn {
+            padding: 10px 16px;
+            background-color: #444;
+            border-radius: 20px;
+        }
+        .toggle-btn.active { background-color: var(--accent-blue); }
+        .toggle-btn.locked { background-color: #222; color: #666; }
+
+        /* Statuses */
+        .status-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .status-controls button { flex: 1; padding: 12px; }
+        .active-statuses {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .status-badge {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+        }
+        .badge-poison { background-color: rgba(34, 197, 94, 0.2); border: 1px solid var(--accent-green); color: var(--accent-green); }
+        .badge-slow { background-color: rgba(234, 179, 8, 0.2); border: 1px solid var(--accent-yellow); color: var(--accent-yellow); }
+        .clear-btn { background: transparent; padding: 4px 12px; border: 1px solid currentColor; font-size: 1rem; }
+
+        /* Inventory */
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .add-card-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        select {
+            flex: 1;
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        .card-item {
+            background-color: #2a2a2a;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .card-actions button { flex: 1; padding: 10px; font-size: 0.95rem; }
+
+        /* End Turn */
+        .end-turn-btn {
+            background-color: var(--accent-blue);
+            width: 100%;
+            padding: 20px;
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 style="text-align: center;">Conquest Player</h2>
+
+    <div class="section">
+        <div class="hp-display" id="hp-display">100</div>
+        <div class="hp-buttons">
+            <button class="btn-red" onclick="adjustHP(-10)">-10</button>
+            <button class="btn-red" onclick="adjustHP(-5)">-5</button>
+            <button class="btn-green" onclick="adjustHP(5)">+5</button>
+            <button class="btn-green" onclick="adjustHP(10)">+10</button>
+        </div>
+
+    <div class="section">
+        <div class="status-controls">
+            <button onclick="addStatus('poison')">Add Poison</button>
+            <button onclick="addStatus('slow')">Add Slow</button>
+        </div>
+        <div class="active-statuses" id="status-container"></div>
+    </div>
+
+    <div class="section">
+        <div class="inventory-header">
+            <h3>Inventory</h3>
+            <span id="card-count" style="font-weight: bold;">0 / 5 Cards</span>
+        </div>
+        <div class="add-card-row">
+            <select id="card-select">
+                <option value="Greatsword">Greatsword</option>
+                <option value="Crossbow">Crossbow</option>
+                <option value="Enchanted Longbow">Enchanted Longbow</option>
+                <option value="Assassin's Dagger">Assassin's Dagger</option>
+                <option value="Steel Shield">Steel Shield</option>
+                <option value="Magic Armor">Magic Armor</option>
+                <option value="Invisibility Dust">Invisibility Dust</option>
+                <option value="Essence of Life">Essence of Life</option>
+                <option value="Phoenix Tears">Phoenix Tears</option>
+                <option value="Antidote Potion">Antidote Potion</option>
+                <option value="Explosive Rune">Explosive Rune</option>
+                <option value="Slow Spell">Slow Spell</option>
+                <option value="Magic Boots">Magic Boots</option>
+                <option value="Teleport Spell">Teleport Spell</option>
+            </select>
+            <button id="add-card-btn" class="btn-blue" onclick="addCard()">Add</button>
+        </div>
+        <div id="hand-container"></div>
+    </div>
+
+        </div>
+
+    <div class="section">
+        <div class="toggle-row">
+            <span>Sprint</span>
+            <button id="sprint-btn" class="toggle-btn" onclick="toggleSprint()">Available</button>
+        </div>
+        <div class="toggle-row">
+            <span>Magic Armor</span>
+            <button id="armor-btn" class="toggle-btn" onclick="toggleArmor()">Unequipped</button>
+        </div>
+    </div>
+
+
+    <button class="end-turn-btn" onclick="endTurn()">END TURN</button>
+
+    <script>
+        // State
+        let hp = 100;
+        let sprintUsed = false;
+        let armorEquipped = false;
+        let poisonCount = 0;
+        let slowCount = 0;
+        let hand = [];
+
+        // Elements
+        const hpDisplay = document.getElementById('hp-display');
+        const sprintBtn = document.getElementById('sprint-btn');
+        const armorBtn = document.getElementById('armor-btn');
+        const statusContainer = document.getElementById('status-container');
+        const cardCount = document.getElementById('card-count');
+        const addCardBtn = document.getElementById('add-card-btn');
+        const cardSelect = document.getElementById('card-select');
+        const handContainer = document.getElementById('hand-container');
+
+        // Functions
+        function updateUI() {
+            hpDisplay.innerText = hp;
+            
+            // Statuses
+            statusContainer.innerHTML = '';
+            if (poisonCount > 0) {
+                statusContainer.innerHTML += `
+                    <div class="status-badge badge-poison">
+                        <span>Poison Active: ${poisonCount} turns left</span>
+                        <button class="clear-btn" style="color: inherit;" onclick="clearStatus('poison')">X</button>
+                    </div>`;
+            }
+            if (slowCount > 0) {
+                statusContainer.innerHTML += `
+                    <div class="status-badge badge-slow">
+                        <span>Slow Active: ${slowCount} turn left</span>
+                        <button class="clear-btn" style="color: inherit;" onclick="clearStatus('slow')">X</button>
+                    </div>`;
+            }
+
+            // Cards
+            cardCount.innerText = `${hand.length} / 5 Cards`;
+            cardCount.style.color = hand.length >= 5 ? 'var(--accent-red)' : 'inherit';
+            addCardBtn.disabled = hand.length >= 5;
+            
+            handContainer.innerHTML = '';
+            hand.forEach((card, index) => {
+                let useBtnHTML = '';
+                if (card === 'Essence of Life') {
+                    useBtnHTML = `<button class="btn-green" onclick="useCard(${index}, 'essence')">Use (+20 HP)</button>`;
+                } else if (card === 'Phoenix Tears') {
+                    useBtnHTML = `<button class="btn-green" onclick="useCard(${index}, 'phoenix')">Use (+40 HP)</button>`;
+                } else if (card === 'Antidote Potion') {
+                    useBtnHTML = `<button class="btn-blue" onclick="useCard(${index}, 'antidote')">Use (Cure & +5 HP)</button>`;
+                }
+
+                handContainer.innerHTML += `
+                    <div class="card-item">
+                        <div class="card-header">
+                            <strong>${card}</strong>
+                        </div>
+                        <div class="card-actions">
+                            ${useBtnHTML}
+                            <button onclick="discardCard(${index})">Discard</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function adjustHP(amount) {
+            hp += amount;
+            if (hp > 100) hp = 100;
+            if (hp < 0) hp = 0;
+            updateUI();
+        }
+
+        function toggleSprint() {
+            if (sprintUsed) return;
+            sprintUsed = true;
+            sprintBtn.innerText = "Sprint Used";
+            sprintBtn.classList.add("locked");
+            sprintBtn.classList.remove("active");
+        }
+
+        function toggleArmor() {
+            armorEquipped = !armorEquipped;
+            if (armorEquipped) {
+                armorBtn.innerText = "Equipped";
+                armorBtn.classList.add("active");
+            } else {
+                armorBtn.innerText = "Unequipped";
+                armorBtn.classList.remove("active");
+            }
+        }
+
+        function addStatus(type) {
+            if (type === 'poison') poisonCount = 3;
+            if (type === 'slow') slowCount = 1;
+            updateUI();
+        }
+
+        function clearStatus(type) {
+            if (type === 'poison') poisonCount = 0;
+            if (type === 'slow') slowCount = 0;
+            updateUI();
+        }
+
+        function addCard() {
+            if (hand.length < 5) {
+                hand.push(cardSelect.value);
+                updateUI();
+            }
+        }
+
+        function discardCard(index) {
+            hand.splice(index, 1);
+            updateUI();
+        }
+
+        function useCard(index, type) {
+            if (type === 'essence') {
+                adjustHP(20);
+            } else if (type === 'phoenix') {
+                adjustHP(40);
+            } else if (type === 'antidote') {
+                adjustHP(5);
+                poisonCount = 0;
+                slowCount = 0;
+            }
+            discardCard(index); // Removes the card and calls updateUI()
+        }
+
+        function endTurn() {
+            if (poisonCount > 0) {
+                adjustHP(-5);
+                poisonCount--;
+            }
+            if (slowCount > 0) {
+                slowCount--;
+            }
+            updateUI();
+        }
+
+        // Init
+        updateUI();
+    </script>
+</body>
+</html>
