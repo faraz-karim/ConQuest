@@ -36,11 +36,11 @@ Before you begin, you need to set up the physical game space.
 ## 3. The Golden Rules of Play
 These three rules supersede everything else in the game.
 
-> **The Health Limit:** Your HP can never go above 100. If you have 90 HP and drink a +20 HP potion, you simply stop at 100.
+> 1. **The Health Limit:** Your HP can never go above 100. If you have 90 HP and drink a +20 HP potion, you simply stop at 100.
 > 
-> **The Hand Limit:** You may never hold more than 5 Relic Cards in your hand. If you ever draw a 6th card, you must immediately look at your hand, choose one card, and put it in the Relic Discard Pile.
+> 2. **The Hand Limit:** You may never hold more than 5 Relic Cards in your hand. If you ever draw a 6th card, you must immediately look at your hand, choose one card, and put it in the Relic Discard Pile.
 > 
-> **Death:** If your HP ever reaches 0, your character dies. You are eliminated from the game. Any cards in your hand are placed in the Relic Discard pile.
+> 3. **Death:** If your HP ever reaches 0, your character dies. You are eliminated from the game. Any cards in your hand are placed in the Relic Discard pile.
 
 ---
 
