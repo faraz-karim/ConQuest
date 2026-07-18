@@ -419,8 +419,8 @@
                     <div style="display: flex; gap: 15px; align-items: center; background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #333; text-align: left;">
                         
                         <!-- Left: The Looping Monster GIF -->
-                        <div style="flex: 0 0 100px; display: flex; justify-content: center;">
-                            <img src="monsters/${gifFileName}" alt="${m.n}" onerror="this.style.display='none'" style="width: 100px; height: 100px; object-fit: contain; border-radius: 8px; border: 2px solid #555; background: #000; image-rendering: pixelated;">
+                        <div style="flex: 0 0 100px; height: 100px; overflow: hidden; border-radius: 8px; border: 2px solid #555; background: #000;">
+                            <img src="monsters/${gifFileName}" alt="${m.n}" onerror="this.parentElement.style.display='none'" style="width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block;">
                         </div>
                         
                         <!-- Right: The Stats and Rules -->
