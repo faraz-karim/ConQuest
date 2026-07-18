@@ -334,11 +334,12 @@
 
         // --- DECKS & BOSS STATE LOGIC ---
         const initRelics = [
-            {n:"Greatsword", e:"45 Dmg (3 AP)"}, {n:"Crossbow", e:"25 Dmg (2 AP)"},
-            {n:"Enchanted Longbow", e:"30 Dmg (2 AP)"}, {n:"Assassin's Dagger", e:"15 Dmg (1 AP)"},
+            {n:"Greatsword", e:"45 Dmg (3 AP)"}, {n:"Stone Axe", e:"15 Dmg (1 AP)"},{n:"Steel Sword", e:"20 Dmg (1 AP)"},
+            {n:"Enchanted Longbow", e:"30 Dmg (2 AP), can hit anyone in a 1 tile radius"}, {n:"Wooden Longbow", e:"10 Dmg (1 AP), hit anyone in a 1 tile radius"}, {n:"Assassin's Dagger", e:"15 Dmg (1 AP) can't be defended against"},
             {n:"Steel Shield", e:"Block 50% Dmg (1 AP)"},
             {n:"Invisibility Dust", e:"Reaction: Cancel combat/attack"}, {n:"Essence of Life", e:"Heal 20 HP"},
-            {n:"Phoenix Tears", e:"Heal 40 HP"}, {n:"Antidote Potion", e:"Cure status + 5 HP"},
+            {n:"Phoenix Tears", e:"Heal 40 HP"}, {n:"Antidote", e:"Cure poison status + 5 HP"},
+            
             {n:"Explosive Rune", e:"Trap: 20 Dmg to next player"}, {n:"Slow Spell", e:"Target moves 1d6"},
             {n:"Magic Boots", e:"+3 Movement"}, {n:"Teleport Spell", e:"Jump to player 6 tiles ahead"}
         ];
@@ -346,10 +347,10 @@
         const armorCard = {n:"Magic Armor", e:"Passive: -5 Dmg taken"};
         
         const initMonsters = [
-            {n:"Goblin Thief", t:"3", p:"10 Dmg", r:"Draw 1 Card"},
-            {n:"Giant Spider", t:"4", p:"5 Dmg + Poison", r:"Draw 1 Card"},
-            {n:"Dire Wolf", t:"4", p:"15 Dmg", r:"Draw 1 Card"},
-            {n:"Orc", t:"5", p:"10 Dmg + Discard 1", r:"Draw 1 Card"},
+            {n:"Goblin Thief", t:"3", p:"Discard 1 card", r:"Stone Axe"},
+            {n:"Giant Spider", t:"4", p:"5 Dmg + Poison", r:"Wooden Longbow"},
+            {n:"Dire Wolf", t:"4", p:"15 Dmg", r:"Invisibility Dust"},
+            {n:"Orc", t:"5", p:"10 Dmg + Discard 1", r:"Heal 20 HP"},
             {n:"Skeleton Warrior", t:"5", p:"20 Dmg", r:"Draw 2 Cards, keep 1"}
         ];
         
@@ -425,9 +426,6 @@
                         
                         <!-- Right: The Stats and Rules -->
                         <div style="flex: 1; font-size: 0.95rem;">
-                            <p style="margin: 0 0 8px 0; color: #ccc; font-size: 0.85rem; line-height: 1.3;">
-                                <strong>Take penalty immediately</strong>, then roll 1d6.
-                            </p>
                             
                             <div style="background: #2a2a2a; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #888;">
                                 <strong style="color: #fff;">Target:</strong> ${m.t} or higher
