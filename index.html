@@ -125,10 +125,6 @@
         </div>
 
         <div class="section">
-            <!-- <div class="toggle-row">
-                <span style="font-size: 1.2rem; font-weight: bold;">Sprint (2d6 Roll)</span>
-                <button id="sprint-btn" class="toggle-btn" onclick="toggleSprint()">Available</button>
-            </div> -->
             <div class="status-row">
                 <button onclick="addStatus('poison')">Add Poison</button>
                 <!-- <button onclick="addStatus('slow')">Add Slow</button> -->
@@ -143,20 +139,32 @@
             </div>
             <div class="grid-2" style="margin-bottom: 10px;">
                 <select id="card-select">
-                    <option value="Greatsword">Greatsword</option>
-                    <option value="Crossbow">Crossbow</option>
-                    <option value="Enchanted Longbow">Enchanted Longbow</option>
-                    <option value="Assassin's Dagger">Assassin's Dagger</option>
-                    <option value="Steel Shield">Steel Shield</option>
-                    <option value="Magic Armor">Magic Armor</option>
-                    <option value="Invisibility Dust">Invisibility Dust</option>
+                    
+                    
+                    <option value="Stone Axe">Stone Axe (15d)</option>
+                    <option value="Wooden Longbow">Wooden Longbow (20d 1 tile radius)</option>
+                    <option value="Steel Sword">Steel Sword (20d)</option>
+                    <option value="Enchanted Longbow">Enchanted Longbow (35d 1 tile radius)</option>
+                    <option value="Greatsword">Greatsword (45d)</option>
+                    <option value="Assassin's Dagger">Assassin's Dagger (15d & undefendable)</option>
+                    <option value="Steel Shield">Steel Shield (%50 less damage taken)</option>
+                    <option value="Magic Armor">Magic Armor (-5 damage x3)</option>
+
+                    
+                    <option value="Life Steal Spell">Life Steal Spell (50% damage returnd as HP)</option>
                     <option value="Essence of Life">Essence of Life (+20 HP)</option>
                     <option value="Phoenix Tears">Phoenix Tears (+40 HP)</option>
-                    <option value="Antidote Potion">Antidote Potion (Cure)</option>
-                    <option value="Explosive Rune">Explosive Rune</option>
-                    <option value="Slow Spell">Slow Spell</option>
-                    <option value="Magic Boots">Magic Boots</option>
-                    <option value="Teleport Spell">Teleport Spell</option>
+                    <option value="Antidote">Antidote (+5 HP & cures posion)</option>
+
+                    <option value="Thorn Garden Spell">Thorn Garden Spell (5d in 1 tile radius)</option>
+                    <option value="Evasion Enchantment">Evasion enchantment (Avoid one combat attack)</option>
+                    <option value="Magic Boots">Magic Boots (+3 on your roll)</option>
+                    <option value="Teleport Spell">Teleportation Crystal (to closest camp)</option>
+                    <option value="Slow Spell">Slow curse (havles rolls of one player for 2 turns)</option>
+                    <option value="Invisibility Dust">Invisibility Dust (end combat)</option>
+
+                    <!-- <option value="Explosive Rune">Explosive Rune</option> -->
+
                 </select>
                 <button id="add-card-btn" class="btn-blue" onclick="manualAddCard()">Add Manually</button>
             </div>
@@ -221,7 +229,7 @@
             
             let statusHTML = '';
             if (poisonCount > 0) statusHTML += `<div class="status-badge bp"><span>Poison: ${poisonCount} turns</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('poison')">X</button></div>`;
-            if (slowCount > 0) statusHTML += `<div class="status-badge bs"><span>Slow: ${slowCount} turns</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('slow')">X</button></div>`;
+            // if (slowCount > 0) statusHTML += `<div class="status-badge bs"><span>Slow: ${slowCount} turns</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('slow')">X</button></div>`;
             if (armorEquipped) statusHTML += `<div class="status-badge ba"><span>Magic Armor (-5 Dmg)</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('armor')">X</button></div>`;
             
             document.getElementById('status-container').innerHTML = statusHTML;
@@ -393,18 +401,7 @@
                 let f = fates[Math.floor(Math.random() * fates.length)];
                 printToLog(`<h3 style="color:var(--accent-purple)">FATE EVENT</h3><h2>${f.split(':')[0]}</h2><p>${f.split(':')[1]}</p>`);
             }
-            // if(type === 'monster') {
-            //     if(monsterDeck.length === 0) setupDecks();
-            //     let m = monsterDeck.pop();
-            //     printToLog(`
-            //         <h3 style="color:#aaa">MONSTER ENCOUNTER</h3>
-            //         <h2>${m.n}</h2>
-            //         <p><strong>Take penalty immediately, then roll 1d6.</strong> If you meet or beat Target, claim reward.</p>
-            //         <p><strong>Target Roll:</strong> ${m.t} (on 1d6)</p>
-            //         <p style="color:var(--accent-red)"><strong>Penalty:</strong> ${m.p}</p>
-            //         <p style="color:var(--accent-green)"><strong>Reward:</strong> ${m.r}</p>
-            //     `);
-            // }
+
             if(type === 'monster') {
                 if(monsterDeck.length === 0) setupDecks();
                 let m = monsterDeck.pop();
