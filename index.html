@@ -140,28 +140,28 @@
             <div class="grid-2" style="margin-bottom: 10px;">
                 <select id="card-select">
                     
-                    
-                    <option value="Stone Axe">Stone Axe (15d)</option>
-                    <option value="Wooden Longbow">Wooden Longbow (20d 1 tile radius)</option>
-                    <option value="Steel Sword">Steel Sword (20d)</option>
-                    <option value="Enchanted Longbow">Enchanted Longbow (35d 1 tile radius)</option>
-                    <option value="Greatsword">Greatsword (45d)</option>
-                    <option value="Assassin's Dagger">Assassin's Dagger (15d & undefendable)</option>
-                    <option value="Steel Shield">Steel Shield (%50 less damage taken)</option>
-                    <option value="Magic Armor">Magic Armor (-5 damage x3)</option>
+                    <option value="Stone Axe">Stone Axe (15 DMG)</option>
+                    <option value="Wooden Longbow">Wooden Longbow (20 DMG,Range: 1 Tile)</option>
+                    <option value="Steel Sword">Steel Sword (20 DMG)</option>
+                    <option value="Enchanted Longbow">Enchanted Longbow (35 DMG,Range: 1 Tile)</option>
+                    <option value="Greatsword">Greatsword (45 DMG)</option>
+                    <option value="Assassin's Dagger">Assassin's Dagger (15 DMG,undefendable)</option>
+                    <option value="Steel Shield">Steel Shield (%50 less DMG)</option>
+                    <option value="Magic Armor">Magic Armor (-5 DMG x3)</option>
+                    <option value="Poison Shield">Poison Shield (Poisons Attacker)</option>
 
-                    
-                    <option value="Life Steal Spell">Life Steal Spell (50% damage returnd as HP)</option>
+                    <option value="Life Steal Spell">Life Steal Spell (Heal 50% of Dmg dealt)</option>
                     <option value="Essence of Life">Essence of Life (+20 HP)</option>
                     <option value="Phoenix Tears">Phoenix Tears (+40 HP)</option>
-                    <option value="Antidote">Antidote (+5 HP & cures posion)</option>
+                    <option value="Antidote">Antidote (+5 HP,cures poison)</option>
+                    <option value="Undead Essence">Undead Essence (Immune ALL Effects)</option>
 
-                    <option value="Thorn Garden Spell">Thorn Garden Spell (5d in 1 tile radius)</option>
+                    <option value="Thorn Garden Spell">Thorn Garden Spell (5 DMG,Range: 1 Tile)</option>
                     <option value="Evasion Enchantment">Evasion enchantment (Avoid one combat attack)</option>
                     <option value="Magic Boots">Magic Boots (+3 on your roll)</option>
-                    <option value="Teleport Spell">Teleportation Crystal (to closest camp)</option>
-                    <option value="Slow Spell">Slow curse (havles rolls of one player for 2 turns)</option>
-                    <option value="Invisibility Dust">Invisibility Dust (end combat)</option>
+                    <option value="Teleport Crystal">Teleportation Crystal (Go to past camp)</option>
+                    <option value="Slow Spell">Slow Curse (Target halves rolls, 2 turns)</option>
+                    <option value="Invisibility Dust">Invisibility Dust (End combat)</option>
 
                     <!-- <option value="Explosive Rune">Explosive Rune</option> -->
 
@@ -339,27 +339,60 @@
             btn.style.backgroundColor = "#555";
             setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--accent-blue)"; }, 1000);
         }
+                    // <option value="Stone Axe">Stone Axe (15 DMG)</option>
+                    // <option value="Wooden Longbow">Wooden Longbow (20 DMG 1 tile radius)</option>
+                    // <option value="Steel Sword">Steel Sword (20 DMG)</option>
+                    // <option value="Enchanted Longbow">Enchanted Longbow (35 DMG 1 tile radius)</option>
+                    // <option value="Greatsword">Greatsword (45d)</option>
+                    // <option value="Assassin's Dagger">Assassin's Dagger (15 DMG & undefendable)</option>
+                    // <option value="Steel Shield">Steel Shield (%50 less DMG)</option>
+                    // <option value="Magic Armor">Magic Armor (-5 DMG x3)</option>
+                    // <option value="Poison Shield">Poison Shield (Poisons Attacker)</option>
 
+                    // <option value="Life Steal Spell">Life Steal Spell (50% DMG returnd as HP)</option>
+                    // <option value="Essence of Life">Essence of Life (+20 HP)</option>
+                    // <option value="Phoenix Tears">Phoenix Tears (+40 HP)</option>
+                    // <option value="Antidote">Antidote (+5 HP & cures posion)</option>
+                    // <option value="Undead Essence">Undead Essence (Immunity ALL Effects)</option>
+
+                    // <option value="Thorn Garden Spell">Thorn Garden Spell (5 DMG all in 1 tile radius)</option>
+                    // <option value="Evasion Enchantment">Evasion enchantment (Avoid one combat attack)</option>
+                    // <option value="Magic Boots">Magic Boots (+3 on your roll)</option>
+                    // <option value="Teleport Spell">Teleportation Crystal (Go to past camp)</option>
+                    // <option value="Slow Spell">Slow curse (Target halves rolls, 2 turns)</option>
+                    // <option value="Invisibility Dust">Invisibility Dust (End combat)</option>
         // --- DECKS & BOSS STATE LOGIC ---
-        const initRelics = [
-            {n:"Greatsword", e:"45 Dmg (3 AP)"}, {n:"Stone Axe", e:"15 Dmg (1 AP)"},{n:"Steel Sword", e:"20 Dmg (1 AP)"},
-            {n:"Enchanted Longbow", e:"30 Dmg (2 AP), can hit anyone in a 1 tile radius"}, {n:"Wooden Longbow", e:"10 Dmg (1 AP), hit anyone in a 1 tile radius"}, {n:"Assassin's Dagger", e:"15 Dmg (1 AP) can't be defended against"},
-            {n:"Steel Shield", e:"Block 50% Dmg (1 AP)"},
-            {n:"Invisibility Dust", e:"Reaction: Cancel combat/attack"}, {n:"Essence of Life", e:"Heal 20 HP"},
-            {n:"Phoenix Tears", e:"Heal 40 HP"}, {n:"Antidote", e:"Cure poison status + 5 HP"},
-            
-            {n:"Explosive Rune", e:"Trap: 20 Dmg to next player"}, {n:"Slow Spell", e:"Target moves 1d6"},
-            {n:"Magic Boots", e:"+3 Movement"}, {n:"Teleport Spell", e:"Jump to player 6 tiles ahead"}
-        ];
-        
-        const armorCard = {n:"Magic Armor", e:"Passive: -5 Dmg taken"};
+const initRelics = [
+    {n: "Stone Axe", e: "15 Dmg"}, 
+    {n: "Wooden Longbow", e: "20 Dmg (Range: 1 Tile)"},
+    {n: "Steel Sword", e: "20 Dmg"}, 
+    {n: "Enchanted Longbow", e: "35 Dmg (Range: 1 Tile)"},
+    {n: "Greatsword", e: "45 Dmg"}, 
+    {n: "Assassin's Dagger", e: "15 Dmg (Undefendable)"},
+    {n: "Steel Shield", e: "Block 50% Dmg"},
+    // {n: "Poison Shield", e: "Defend & Poison Attacker"}, 
+    // {n: "Life Steal Spell", e: "Heal 50% of Dmg dealt"},
+    {n: "Essence of Life", e: "Heal 20 HP"}, 
+    {n: "Phoenix Tears", e: "Heal 40 HP"}, 
+    {n: "Antidote Potion", e: "Cure Status & +5 HP"},
+    // {n: "Undead Essence", e: "Immune to ALL Status Effects"},
+    {n: "Thorn Garden Spell", e: "5 Dmg to all within 1 Tile"}, 
+    // {n: "Evasion Enchantment", e: "Avoid 1 Attack"},
+    // {n: "Magic Boots", e: "+3 Movement"}, 
+    {n: "Teleportation Crystal", e: "Jump to previous Camp"}, 
+    {n: "Slow Curse", e: "Target halves movement rolls (2 turns)"},
+    {n: "Invisibility Dust", e: "Instantly end combat/flee"}
+];
+
+// Armor handled separately to keep quantity at 1 in the deck
+const armorCard = {n:"Magic Armor", e:"Passive: -5 Dmg (3 Uses)"};
         
         const initMonsters = [
-            {n:"Goblin Thief", t:"3", p:"Discard 1 card", r:"Stone Axe"},
-            {n:"Giant Spider", t:"4", p:"5 Dmg + Poison", r:"Wooden Longbow"},
-            {n:"Dire Wolf", t:"4", p:"15 Dmg", r:"Invisibility Dust"},
-            {n:"Orc", t:"5", p:"10 Dmg + Discard 1", r:"Heal 20 HP"},
-            {n:"Skeleton Warrior", t:"5", p:"20 Dmg", r:"Draw 2 Cards, keep 1"}
+            {n:"Goblin Thief", t:"3", p:"Discard 1 card", r:"Magic Boots"},
+            {n:"Giant Spider", t:"4", p:"5 Dmg + Poison", r:"Poison Shield"},
+            {n:"Dire Wolf", t:"4", p:"15 Dmg", r:"Evasion Enchantment"},
+            {n:"Orc", t:"5", p:"10 Dmg + Discard 1", r:"Life Steal Spell"},
+            {n:"Skeleton Warrior", t:"5", p:"20 Dmg", r:"undead essence"}
         ];
         
         const initBosses = [
@@ -397,7 +430,7 @@
                 `);
             }
             if(type === 'fate') {
-                const fates = ["Treasure Drop: All draw 1 Card", "Earthquake: Take 10 Dmg if on Trap/Monster", "Healing Rain: All +15 HP", "Poison Cloud: All take 5 Dmg"];
+                const fates = ["Treasure Drop: All draw 1 Card", "Earthquake: Take 10 Dmg if on Trap/Monster", "Healing Rain: All +15 HP", "Poison Cloud: All take 5 Dmg", "Techtonic Shift: Players move 2 tiles, alternating up then down clockwise", "Shatter-Proof: All weapons and armors become indestructible for 3 turns", "Mimic Infestation: Next 3 turns 50% chance of a chest becoming a mimic and dealing 10 DMG", "Temporal Hiccup: Reverse playing order", "Tailwind: Everyone gets an extra roll", "Martyr’s Bargain: All attacks for the next 2 turns do 2x DMG but you get 50% of the DMG"   ];
                 let f = fates[Math.floor(Math.random() * fates.length)];
                 printToLog(`<h3 style="color:var(--accent-purple)">FATE EVENT</h3><h2>${f.split(':')[0]}</h2><p>${f.split(':')[1]}</p>`);
             }
