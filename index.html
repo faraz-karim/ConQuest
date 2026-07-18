@@ -392,16 +392,57 @@
                 let f = fates[Math.floor(Math.random() * fates.length)];
                 printToLog(`<h3 style="color:var(--accent-purple)">FATE EVENT</h3><h2>${f.split(':')[0]}</h2><p>${f.split(':')[1]}</p>`);
             }
+            // if(type === 'monster') {
+            //     if(monsterDeck.length === 0) setupDecks();
+            //     let m = monsterDeck.pop();
+            //     printToLog(`
+            //         <h3 style="color:#aaa">MONSTER ENCOUNTER</h3>
+            //         <h2>${m.n}</h2>
+            //         <p><strong>Take penalty immediately, then roll 1d6.</strong> If you meet or beat Target, claim reward.</p>
+            //         <p><strong>Target Roll:</strong> ${m.t} (on 1d6)</p>
+            //         <p style="color:var(--accent-red)"><strong>Penalty:</strong> ${m.p}</p>
+            //         <p style="color:var(--accent-green)"><strong>Reward:</strong> ${m.r}</p>
+            //     `);
+            // }
             if(type === 'monster') {
                 if(monsterDeck.length === 0) setupDecks();
                 let m = monsterDeck.pop();
+                
+                // Formats the monster name to match a file (e.g., "Giant Spider" -> "giant_spider.gif")
+                // You will need to create a "monsters" folder and place your GIFs inside it.
+                let gifFileName = m.n.toLowerCase().replace(/ /g, '_') + '.gif'; 
+
                 printToLog(`
-                    <h3 style="color:#aaa">MONSTER ENCOUNTER</h3>
-                    <h2>${m.n}</h2>
-                    <p><strong>Take penalty immediately, then roll 1d6.</strong> If you meet or beat Target, claim reward.</p>
-                    <p><strong>Target Roll:</strong> ${m.t} (on 1d6)</p>
-                    <p style="color:var(--accent-red)"><strong>Penalty:</strong> ${m.p}</p>
-                    <p style="color:var(--accent-green)"><strong>Reward:</strong> ${m.r}</p>
+                    <h3 style="color:var(--accent-red); margin: 0 0 5px 0;">⚔️ MONSTER ENCOUNTER</h3>
+                    <h2 style="margin: 0 0 15px 0; font-size: 1.8rem;">${m.n}</h2>
+                    
+                    <div style="display: flex; gap: 15px; align-items: center; background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #333; text-align: left;">
+                        
+                        <!-- Left: The Looping Monster GIF -->
+                        <div style="flex: 0 0 100px; display: flex; justify-content: center;">
+                            <img src="monsters/${gifFileName}" alt="${m.n}" onerror="this.style.display='none'" style="width: 100px; height: 100px; object-fit: contain; border-radius: 8px; border: 2px solid #555; background: #000; image-rendering: pixelated;">
+                        </div>
+                        
+                        <!-- Right: The Stats and Rules -->
+                        <div style="flex: 1; font-size: 0.95rem;">
+                            <p style="margin: 0 0 8px 0; color: #ccc; font-size: 0.85rem; line-height: 1.3;">
+                                <strong>Take penalty immediately</strong>, then roll 1d6.
+                            </p>
+                            
+                            <div style="background: #2a2a2a; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #888;">
+                                <strong style="color: #fff;">Target:</strong> ${m.t} or higher
+                            </div>
+                            
+                            <div style="color:var(--accent-red); margin-bottom: 6px;">
+                                <strong>Penalty:</strong> ${m.p}
+                            </div>
+                            
+                            <div style="color:var(--accent-green);">
+                                <strong>Reward:</strong> ${m.r}
+                            </div>
+                        </div>
+                        
+                    </div>
                 `);
             }
             if(type === 'boss') {
