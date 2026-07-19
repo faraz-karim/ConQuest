@@ -407,11 +407,11 @@ const initMonsters = [
         let lastRoundLog = "";
         
 const initBosses = [
-            { id: "golem", n: "Stone Golem", max_h: 70, m: "Stoneskin: Reduces basic strikes to 5 Dmg. Breaks permanently on Adrenaline Surge or >=20 Dmg.", r: "Draw 2 Cards" },
-            { id: "dragon", n: "Poison Dragon", max_h: 55, m: "Acid Blood: Deals 5 recoil Dmg to you on every successful hit.", r: "Draw 2 Cards" },
-            { id: "vampire", n: "Vampire", max_h: 50, m: "Life Siphon: Heals for 50% of the actual unmitigated damage dealt to you.", r: "Draw 2 Cards" },
-            { id: "knight", n: "Black Knight", max_h: 65, m: "Unstoppable: Damage scales +5 every round. Defending resets it.", r: "Keep card. Blocks 15 dmg in Arena." },
-            { id: "illusionist", n: "Illusionist", max_h: 45, m: "Mirage: Passive 33% chance to completely ignore your attacks.", r: "Draw 2 Cards" }
+            { id: "golem", n: "Stone Golem", max_h: 70, speed: "slow", m: "Stoneskin: Reduces basic strikes to 5 Dmg. Breaks permanently on Adrenaline Surge or >=20 Dmg.", r: "Draw 2 Cards" },
+            { id: "dragon", n: "Poison Dragon", max_h: 55, speed: "normal", m: "Acid Blood: Deals 5 recoil Dmg to you on every successful hit.", r: "Draw 2 Cards" },
+            { id: "vampire", n: "Vampire", max_h: 50, speed: "fast", m: "Life Siphon: Heals for 50% of the actual unmitigated damage dealt to you.", r: "Draw 2 Cards" },
+            { id: "knight", n: "Black Knight", max_h: 65, speed: "slow", m: "Unstoppable: Damage scales +5 every round. Defending resets it.", r: "Keep card. Blocks 15 dmg in Arena." },
+            { id: "illusionist", n: "Illusionist", max_h: 45, speed: "fast", m: "Mirage: Passive 33% chance to completely ignore your attacks.", r: "Draw 2 Cards" }
         ];
 
         let relicDeck = []; let monsterDeck = []; let bossDeck = [];
@@ -668,7 +668,7 @@ if(type === 'boss') {
                             <strong style="color:var(--accent-yellow); font-size:0.85rem;">INTENT:</strong><br>
                             <span style="font-size:0.95rem;">${bActionText} (${bActionDmg} Dmg)</span>
                         </div>
-                        
+                        <p style="font-size: 0.8rem; margin: 5px 0 0 0;"><strong>Speed:</strong> <span style="color:var(--accent-blue); text-transform:uppercase;">${b.speed}</span></p>
                         <p style="font-size: 0.8rem; color: #999; margin-top:10px; line-height:1.3;"><strong>Passive:</strong> ${b.m}</p>
                         ${b.id === 'golem' ? `<div style="font-size:0.85rem; margin-top:5px; color:${golemStoneskinBroken ? 'var(--accent-red)' : 'var(--accent-blue)'};"><strong>Stoneskin:</strong> ${golemStoneskinBroken ? 'BROKEN' : 'ACTIVE'}</div>` : ''}
                     </div>
@@ -718,13 +718,161 @@ if(type === 'boss') {
             executeClash('attack', 0, pDmg);
         }
 
+        // function executeClash(actionType, adrenRoll = 0, manualDmg = 0) {
+        //     let b = currentBoss;
+        //     let pDmg = 0;
+        //     let pDefended = (actionType === 'defend');
+        //     let outcomeLog = "";
+
+        //     // 1. Calculate Player Output
+        //     if (actionType === 'attack') {
+        //         pDmg = manualDmg;
+        //     } else if (actionType === 'adrenaline') {
+        //         if (adrenRoll <= 2) pDmg = 10;
+        //         else if (adrenRoll <= 4) pDmg = 20;
+        //         else pDmg = 30;
+        //     }
+
+        //     // 2. Apply Boss Defensive Passives
+        //     if (b.id === 'illusionist' && actionType !== 'defend') {
+        //         if (Math.random() < 0.33) {
+        //             pDmg = 0;
+        //             outcomeLog += `<p style="color:var(--accent-purple); margin:4px 0;">Your strike shatters an illusion! (Deals 0 Damage).</p>`;
+        //         }
+        //     }
+
+        //     if (b.id === 'golem' && actionType !== 'defend') {
+        //         if (actionType === 'adrenaline') {
+        //             golemStoneskinBroken = true;
+        //             outcomeLog += `<p style="color:var(--accent-yellow); margin:4px 0;">Adrenaline Surge shattered the Stoneskin!</p>`;
+        //         } else if (!golemStoneskinBroken) {
+        //             pDmg = 5;
+        //             golemDamageTaken += pDmg;
+        //             outcomeLog += `<p style="color:#aaa; margin:4px 0;">Stoneskin mitigates your strike to 5 damage.</p>`;
+        //             if (golemDamageTaken >= 20) {
+        //                 golemStoneskinBroken = true;
+        //                 outcomeLog += `<p style="color:var(--accent-yellow); margin:4px 0;">The Golem's Stoneskin has broken!</p>`;
+        //             }
+        //         }
+        //     }
+
+        //     // 3. Boss Modifiers & Reset Triggers
+        //     if (b.id === 'knight' && pDefended) {
+        //         knightUnstoppableDmg = 10;
+        //         outcomeLog += `<p style="color:var(--accent-blue); margin:4px 0;">Your defense reset the Knight's momentum!</p>`;
+        //     }
+
+        //     // 4. Resolve Incoming Damage
+        //     let bDmg = b.intent_dmg;
+        //     let finalIncoming = bDmg;
+        //     let armorShattered = false;
+
+        //     if (pDefended && bDmg > 0) finalIncoming = Math.floor(bDmg / 2);
+
+        //     if (armorEquipped) {
+        //         finalIncoming = Math.max(0, finalIncoming - 5);
+        //         if (bDmg >= 15) {
+        //             armorEquipped = false;
+        //             armorShattered = true;
+        //         }
+        //     }
+
+        //     // 5. Apply HP Updates
+        //     currentBossHP -= pDmg;
+        //     if (currentBossHP < 0) currentBossHP = 0;
+            
+        //     hp -= finalIncoming;
+        //     if (hp < 0) hp = 0;
+
+        //     // 6. Post-Damage Boss Mechanics
+        //     if (b.id === 'dragon' && pDmg > 0) {
+        //         hp -= 5;
+        //         outcomeLog += `<p style="color:var(--accent-green); margin:4px 0;">Acid Blood burns you for 5 recoil damage!</p>`;
+        //     }
+        //     if (b.id === 'dragon' && b.current_effect === 'poison') {
+        //         addStatus('poison');
+        //         outcomeLog += `<p style="color:var(--accent-green); margin:4px 0;">You were poisoned by Venom Breath!</p>`;
+        //     }
+        //     if (b.id === 'vampire' && finalIncoming > 0) {
+        //         let healAmt = Math.floor(finalIncoming / 2);
+        //         currentBossHP = Math.min(b.max_h, currentBossHP + healAmt);
+        //         outcomeLog += `<p style="color:var(--accent-red); margin:4px 0;">Life Siphon healed the Vampire for ${healAmt} HP!</p>`;
+        //     }
+        //     if (b.id === 'knight') {
+        //         knightUnstoppableDmg += 5; 
+        //     }
+
+        //     updatePlayerUI();
+
+        //     // 7. Compile Round Results
+        //     lastRoundLog = `
+        //         <div style="background:#111; border: 1px solid #333; padding: 12px; border-radius: 6px;">
+        //             <h3 style="color:var(--accent-blue); margin-top:0;">ROUND ${bossRound} RESULTS</h3>
+        //             ${pDefended ? `<p style="margin:4px 0;">You braced for impact (Defended).</p>` : `<p style="margin:4px 0;">You hit ${b.n} for <strong>${pDmg}</strong> damage.</p>`}
+        //             <p style="margin:4px 0;">${b.n} hit you for <strong>${finalIncoming}</strong> damage.</p>
+        //             ${outcomeLog}
+        //             ${armorShattered ? `<p style="color:var(--accent-yellow); margin:4px 0;"><strong>Your Magic Armor shattered!</strong></p>` : ''}
+        //         </div>
+        //     `;
+
+        //     // 8. Handle Combat End States
+        //     if (currentBossHP === 0 && hp > 0) {
+        //         document.getElementById('boss-ui').innerHTML = `
+        //             ${lastRoundLog}
+        //             <div style="text-align:center; margin-top: 15px;">
+        //                 <h2 style="color:var(--accent-green)">VICTORY!</h2><p>Reward: ${b.r}</p>
+        //                 <button class="btn-blue btn-console" style="width:100%;" onclick="clearBoss()">Conclude Combat</button>
+        //             </div>
+        //         `;
+        //     } else if (hp === 0) {
+        //         document.getElementById('boss-ui').innerHTML = `
+        //             ${lastRoundLog}
+        //             <div style="text-align:center; margin-top: 15px;">
+        //                 <h2 style="color:var(--accent-red)">YOU DIED!</h2>
+        //                 <button class="btn-red btn-console" style="width:100%;" onclick="clearBoss()">Accept Fate</button>
+        //             </div>
+        //         `;
+        //     } else {
+        //         bossRound++;
+        //         renderBossUI(); 
+        //     }
+        // }
+
         function executeClash(actionType, adrenRoll = 0, manualDmg = 0) {
             let b = currentBoss;
-            let pDmg = 0;
             let pDefended = (actionType === 'defend');
-            let outcomeLog = "";
+            
+            let pDmg = 0;
+            let bDmg = b.intent_dmg;
+            let finalIncoming = bDmg;
+            
+            let playerActionLog = "";
+            let bossActionLog = "";
+            let initiativeLog = "";
+            let armorShattered = false;
 
-            // 1. Calculate Player Output
+            // --- STEP A & B: Determine Initiative ---
+            let pSpeedVal = (actionType === 'adrenaline') ? 2 : 1; // 2 = fast, 1 = normal
+            let bSpeedVal = (b.speed === 'fast') ? 2 : (b.speed === 'slow') ? 0 : 1;
+            
+            let firstStriker = "";
+            let pWinsTie = Math.random() < 0.5;
+
+            if (pDefended) {
+                firstStriker = "boss"; // Player doesn't strike, Boss effectively goes first
+                initiativeLog = `<div style="color:#888; font-style:italic; border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">🛡️ You took a preemptive defensive stance.</div>`;
+            } else if (pSpeedVal > bSpeedVal) {
+                firstStriker = "player";
+                initiativeLog = `<div style="color:var(--accent-green); font-style:italic; border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">⚡ You strike first with superior speed!</div>`;
+            } else if (bSpeedVal > pSpeedVal) {
+                firstStriker = "boss";
+                initiativeLog = `<div style="color:var(--accent-red); font-style:italic; border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">⚡ The ${b.n} strikes first with superior speed!</div>`;
+            } else {
+                firstStriker = pWinsTie ? "player" : "boss";
+                initiativeLog = `<div style="color:var(--accent-yellow); font-style:italic; border-bottom:1px solid #333; padding-bottom:6px; margin-bottom:8px;">⚡ You both lunge simultaneously, but ${pWinsTie ? 'you land your blow' : `the ${b.n} lands its blow`} a fraction of a second faster!</div>`;
+            }
+
+            // --- PRE-COMBAT: Set Player Damage Intent & Knight Reset ---
             if (actionType === 'attack') {
                 pDmg = manualDmg;
             } else if (actionType === 'adrenaline') {
@@ -733,89 +881,122 @@ if(type === 'boss') {
                 else pDmg = 30;
             }
 
-            // 2. Apply Boss Defensive Passives
-            if (b.id === 'illusionist' && actionType !== 'defend') {
-                if (Math.random() < 0.33) {
-                    pDmg = 0;
-                    outcomeLog += `<p style="color:var(--accent-purple); margin:4px 0;">Your strike shatters an illusion! (Deals 0 Damage).</p>`;
-                }
-            }
-
-            if (b.id === 'golem' && actionType !== 'defend') {
-                if (actionType === 'adrenaline') {
-                    golemStoneskinBroken = true;
-                    outcomeLog += `<p style="color:var(--accent-yellow); margin:4px 0;">Adrenaline Surge shattered the Stoneskin!</p>`;
-                } else if (!golemStoneskinBroken) {
-                    pDmg = 5;
-                    golemDamageTaken += pDmg;
-                    outcomeLog += `<p style="color:#aaa; margin:4px 0;">Stoneskin mitigates your strike to 5 damage.</p>`;
-                    if (golemDamageTaken >= 20) {
-                        golemStoneskinBroken = true;
-                        outcomeLog += `<p style="color:var(--accent-yellow); margin:4px 0;">The Golem's Stoneskin has broken!</p>`;
-                    }
-                }
-            }
-
-            // 3. Boss Modifiers & Reset Triggers
             if (b.id === 'knight' && pDefended) {
                 knightUnstoppableDmg = 10;
-                outcomeLog += `<p style="color:var(--accent-blue); margin:4px 0;">Your defense reset the Knight's momentum!</p>`;
+                playerActionLog += `<div style="color:var(--accent-blue); font-size:0.9rem;">🛡️ Your defense reset the Knight's momentum!</div>`;
             }
 
-            // 4. Resolve Incoming Damage
-            let bDmg = b.intent_dmg;
-            let finalIncoming = bDmg;
-            let armorShattered = false;
+            // --- ACTION HANDLERS ---
+            const processPlayerAttack = () => {
+                if (pDefended || pDmg === 0) return;
+                
+                let actualPDmg = pDmg;
 
-            if (pDefended && bDmg > 0) finalIncoming = Math.floor(bDmg / 2);
+                // Boss Passives (Mitigation/Avoidance)
+                if (b.id === 'illusionist' && Math.random() < 0.33) {
+                    actualPDmg = 0;
+                    playerActionLog += `<div style="color:var(--accent-purple); font-size:0.9rem; margin-top:4px;">✨ Your strike shatters an illusion! (Deals 0 Damage).</div>`;
+                }
+                if (b.id === 'golem') {
+                    if (actionType === 'adrenaline') {
+                        golemStoneskinBroken = true;
+                        playerActionLog += `<div style="color:var(--accent-yellow); font-size:0.9rem; margin-top:4px;">💥 Adrenaline Surge shattered the Stoneskin!</div>`;
+                    } else if (!golemStoneskinBroken) {
+                        actualPDmg = 5;
+                        golemDamageTaken += actualPDmg;
+                        playerActionLog += `<div style="color:#aaa; font-size:0.9rem; margin-top:4px;">🪨 Stoneskin mitigates your strike to 5 damage.</div>`;
+                        if (golemDamageTaken >= 20) {
+                            golemStoneskinBroken = true;
+                            playerActionLog += `<div style="color:var(--accent-yellow); font-size:0.9rem; margin-top:4px;">💥 The Golem's Stoneskin has broken!</div>`;
+                        }
+                    }
+                }
 
-            if (armorEquipped) {
-                finalIncoming = Math.max(0, finalIncoming - 5);
-                if (bDmg >= 15) {
-                    armorEquipped = false;
-                    armorShattered = true;
+                // Apply Damage to Boss
+                currentBossHP -= actualPDmg;
+                if (currentBossHP < 0) currentBossHP = 0;
+                
+                playerActionLog = `<div style="margin-bottom:2px;">🗡️ You hit ${b.n} for <strong style="color:white;">${actualPDmg}</strong> damage.</div>` + playerActionLog;
+
+                // Boss Passives (Recoil)
+                if (b.id === 'dragon' && actualPDmg > 0 && hp > 0) {
+                    hp -= 5;
+                    playerActionLog += `<div style="color:var(--accent-green); font-size:0.9rem; margin-top:4px;">🧪 Acid Blood burns you for 5 recoil damage!</div>`;
+                }
+            };
+
+            const processBossAttack = () => {
+                // Apply Player Defenses
+                if (pDefended && bDmg > 0) finalIncoming = Math.floor(bDmg / 2);
+                if (armorEquipped) {
+                    finalIncoming = Math.max(0, finalIncoming - 5);
+                    if (bDmg >= 15) {
+                        armorEquipped = false;
+                        armorShattered = true;
+                    }
+                }
+
+                // Apply Damage to Player
+                hp -= finalIncoming;
+                if (hp < 0) hp = 0;
+
+                bossActionLog = `<div style="margin-bottom:2px;">🩸 ${b.n} hit you for <strong style="color:var(--accent-red);">${finalIncoming}</strong> damage.</div>`;
+                
+                if (armorShattered) bossActionLog += `<div style="color:var(--accent-yellow); font-size:0.9rem; margin-top:4px;">🛡️ Your Magic Armor shattered!</div>`;
+
+                // Boss Passives (On-Hit Effects)
+                if (b.id === 'dragon' && b.current_effect === 'poison') {
+                    addStatus('poison');
+                    bossActionLog += `<div style="color:var(--accent-green); font-size:0.9rem; margin-top:4px;">🤢 You were poisoned by Venom Breath!</div>`;
+                }
+                if (b.id === 'vampire' && finalIncoming > 0) {
+                    let healAmt = Math.floor(finalIncoming / 2);
+                    currentBossHP = Math.min(b.max_h, currentBossHP + healAmt);
+                    bossActionLog += `<div style="color:var(--accent-red); font-size:0.9rem; margin-top:4px;">🦇 Life Siphon healed the Vampire for ${healAmt} HP!</div>`;
+                }
+                if (b.id === 'knight') {
+                    knightUnstoppableDmg += 5; 
+                }
+            };
+
+            // --- STEP C, D, & E: Execute Clash Sequentially ---
+            if (firstStriker === "player") {
+                processPlayerAttack();
+                if (currentBossHP > 0 && hp > 0) {
+                    processBossAttack();
+                } else if (currentBossHP === 0) {
+                    bossActionLog = `<div style="color:#666; text-decoration:line-through; font-size:0.9rem; margin-top:4px;">The ${b.n}'s attack was cancelled.</div>`;
+                }
+            } else {
+                processBossAttack();
+                if (hp > 0 && currentBossHP > 0) {
+                    processPlayerAttack();
+                } else if (hp === 0) {
+                    playerActionLog += `<div style="color:#666; text-decoration:line-through; font-size:0.9rem; margin-top:4px;">Your attack was cancelled.</div>`;
                 }
             }
 
-            // 5. Apply HP Updates
-            currentBossHP -= pDmg;
-            if (currentBossHP < 0) currentBossHP = 0;
-            
-            hp -= finalIncoming;
-            if (hp < 0) hp = 0;
-
-            // 6. Post-Damage Boss Mechanics
-            if (b.id === 'dragon' && pDmg > 0) {
-                hp -= 5;
-                outcomeLog += `<p style="color:var(--accent-green); margin:4px 0;">Acid Blood burns you for 5 recoil damage!</p>`;
-            }
-            if (b.id === 'dragon' && b.current_effect === 'poison') {
-                addStatus('poison');
-                outcomeLog += `<p style="color:var(--accent-green); margin:4px 0;">You were poisoned by Venom Breath!</p>`;
-            }
-            if (b.id === 'vampire' && finalIncoming > 0) {
-                let healAmt = Math.floor(finalIncoming / 2);
-                currentBossHP = Math.min(b.max_h, currentBossHP + healAmt);
-                outcomeLog += `<p style="color:var(--accent-red); margin:4px 0;">Life Siphon healed the Vampire for ${healAmt} HP!</p>`;
-            }
-            if (b.id === 'knight') {
-                knightUnstoppableDmg += 5; 
-            }
-
+            // --- FINAL: Update State & Compile Log ---
             updatePlayerUI();
 
-            // 7. Compile Round Results
+            // Assemble the logs visually in the correct order
+            let combinedLogs = firstStriker === 'player' 
+                ? `<div style="margin-bottom:10px;">${playerActionLog}</div><div>${bossActionLog}</div>` 
+                : `<div style="margin-bottom:10px;">${bossActionLog}</div><div>${playerActionLog}</div>`;
+
             lastRoundLog = `
-                <div style="background:#111; border: 1px solid #333; padding: 12px; border-radius: 6px;">
-                    <h3 style="color:var(--accent-blue); margin-top:0;">ROUND ${bossRound} RESULTS</h3>
-                    ${pDefended ? `<p style="margin:4px 0;">You braced for impact (Defended).</p>` : `<p style="margin:4px 0;">You hit ${b.n} for <strong>${pDmg}</strong> damage.</p>`}
-                    <p style="margin:4px 0;">${b.n} hit you for <strong>${finalIncoming}</strong> damage.</p>
-                    ${outcomeLog}
-                    ${armorShattered ? `<p style="color:var(--accent-yellow); margin:4px 0;"><strong>Your Magic Armor shattered!</strong></p>` : ''}
+                <div style="background:#111; border: 1px solid #333; padding: 12px; border-radius: 6px; text-align:left; line-height:1.4;">
+                    <h3 style="color:var(--accent-blue); margin-top:0; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span>ROUND ${bossRound}</span>
+                        <span style="font-size:0.75rem; color:#666; background:#222; padding:2px 6px; border-radius:4px;">ACTION LOG</span>
+                    </h3>
+                    ${initiativeLog}
+                    <div style="display:flex; flex-direction:column;">
+                        ${combinedLogs}
+                    </div>
                 </div>
             `;
 
-            // 8. Handle Combat End States
             if (currentBossHP === 0 && hp > 0) {
                 document.getElementById('boss-ui').innerHTML = `
                     ${lastRoundLog}
