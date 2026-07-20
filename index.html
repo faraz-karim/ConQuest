@@ -154,11 +154,26 @@
 
     <div id="tab-player" class="content-area tab-content active">
         <h2 style="text-align: center; color: #888;">My Dashboard</h2>
-        
+<!--         
         <div class="section">
             <div class="hp-display" id="hp-display">100</div>
             <div class="grid-4">
+                <button class="btn-red" onclick="takeDamage(10)">-10</button> -->
+                <!-- new -->
+        <div class="section">
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 0.9rem; color: #888; font-weight: bold;">HEALTH</div>
+                    <div class="hp-display" id="hp-display" style="margin:0; color: var(--accent-red);">100</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.9rem; color: #888; font-weight: bold;">ACTION POINTS</div>
+                    <div class="hp-display" id="ap-display" style="margin:0; color: var(--accent-blue);">3</div>
+                </div>
+            </div>
+            <div class="grid-4">
                 <button class="btn-red" onclick="takeDamage(10)">-10</button>
+                <!-- new -->
                 <button class="btn-red" onclick="takeDamage(5)">-5</button>
                 <button class="btn-green" onclick="adjustHP(5)">+5</button>
                 <button class="btn-green" onclick="adjustHP(10)">+10</button>
@@ -233,6 +248,23 @@
         </div>
     </div>
 
+    <!-- <nav class="bottom-nav">
+        <button id="nav-player" class="nav-btn active" onclick="switchTab('player')">
+            <span id="nav-icon-emoji" style="margin-right: 8px;">👤</span>
+            <img id="nav-icon-img" src="" style="display: none; width: 48px; height: 48px; margin-right: 8px; object-fit: contain; background: transparent;">
+            My Player
+        </button>
+        <button id="nav-decks" class="nav-btn" onclick="switchTab('decks')">🃏 The Decks</button>
+    </nav> -->
+
+<div id="tab-arena" class="content-area tab-content">
+        <div style="margin-bottom: 15px; text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px;">
+            <h2 style="color: var(--accent-red); margin: 0; font-size: 1.8rem;">⚔️ PvP Arena</h2>
+        </div>
+        
+        <div id="arena-stage"></div>
+    </div>
+
     <nav class="bottom-nav">
         <button id="nav-player" class="nav-btn active" onclick="switchTab('player')">
             <span id="nav-icon-emoji" style="margin-right: 8px;">👤</span>
@@ -240,8 +272,8 @@
             My Player
         </button>
         <button id="nav-decks" class="nav-btn" onclick="switchTab('decks')">🃏 The Decks</button>
+        <button id="nav-arena" class="nav-btn" onclick="switchTab('arena')">⚔️ Arena PvP</button>
     </nav>
-
     <script>
         // --- TOKEN SELECTION ---
         function selectToken(filename) {
@@ -256,19 +288,65 @@
         }
 
         // --- PLAYER STATE & LOGIC ---
+        // let hp = 100;
+        // let poisonCount = 0; 
+        // let slowCount = 0;
+        // let armorEquipped = false;
+        // let sprintUsed = false;
+        // let hand = [];
+
+        // function updatePlayerUI() {
+        //     document.getElementById('hp-display').innerText = hp;
+            
+        //     let statusHTML = '';
+        //     if (poisonCount > 0) statusHTML += `<div class="status-badge bp"><span>Poison: ${poisonCount} turns</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('poison')">X</button></div>`;
+        //     // if (slowCount > 0) statusHTML += `<div class="status-badge bs"><span>Slow: ${slowCount} turns</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('slow')">X</button></div>`;
+        //     if (armorEquipped) statusHTML += `<div class="status-badge ba"><span>Magic Armor (-5 Dmg)</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('armor')">X</button></div>`;
+            
+        //     document.getElementById('status-container').innerHTML = statusHTML;
+
+        //     const cc = document.getElementById('card-count');
+        //     cc.innerText = `${hand.length} / 5 Cards`;
+        //     cc.style.color = hand.length >= 5 ? 'var(--accent-red)' : 'inherit';
+        //     document.getElementById('add-card-btn').disabled = hand.length >= 5;
+            
+        //     let handHTML = '';
+        //     hand.forEach((card, index) => {
+        //         let useBtn = '';
+        //         if(card.includes('Essence')) useBtn = `<button class="btn-green" onclick="useItem(${index}, 'heal20')">Use</button>`;
+        //         else if(card.includes('Phoenix')) useBtn = `<button class="btn-green" onclick="useItem(${index}, 'heal40')">Use</button>`;
+        //         else if(card.includes('Antidote')) useBtn = `<button class="btn-blue" onclick="useItem(${index}, 'cure')">Use</button>`;
+        //         else if(card === 'Magic Armor') useBtn = `<button class="btn-blue" onclick="useItem(${index}, 'equipArmor')">Equip</button>`;
+                
+        //         handHTML += `
+        //             <div class="card-item">
+        //                 <strong>${card}</strong>
+        //                 <div class="card-actions">
+        //                     ${useBtn}
+        //                     <button onclick="discardItem(${index})">Discard</button>
+        //                 </div>
+        //             </div>`;
+        //     });
+        //     document.getElementById('hand-container').innerHTML = handHTML;
+        // }
+
+
+        // --- PLAYER STATE & LOGIC ---
         let hp = 100;
         let poisonCount = 0; 
         let slowCount = 0;
         let armorEquipped = false;
         let sprintUsed = false;
         let hand = [];
+        let maxAP = 3;
+        let currentAP = 3;
 
         function updatePlayerUI() {
             document.getElementById('hp-display').innerText = hp;
+            document.getElementById('ap-display').innerText = currentAP; 
             
             let statusHTML = '';
             if (poisonCount > 0) statusHTML += `<div class="status-badge bp"><span>Poison: ${poisonCount} turns</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('poison')">X</button></div>`;
-            // if (slowCount > 0) statusHTML += `<div class="status-badge bs"><span>Slow: ${slowCount} turns</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('slow')">X</button></div>`;
             if (armorEquipped) statusHTML += `<div class="status-badge ba"><span>Magic Armor (-5 Dmg)</span><button style="width:auto; padding:5px; background:none; border:1px solid currentColor; color:inherit;" onclick="clearStatus('armor')">X</button></div>`;
             
             document.getElementById('status-container').innerHTML = statusHTML;
@@ -279,25 +357,29 @@
             document.getElementById('add-card-btn').disabled = hand.length >= 5;
             
             let handHTML = '';
-            hand.forEach((card, index) => {
-                let useBtn = '';
-                if(card.includes('Essence')) useBtn = `<button class="btn-green" onclick="useItem(${index}, 'heal20')">Use</button>`;
-                else if(card.includes('Phoenix')) useBtn = `<button class="btn-green" onclick="useItem(${index}, 'heal40')">Use</button>`;
-                else if(card.includes('Antidote')) useBtn = `<button class="btn-blue" onclick="useItem(${index}, 'cure')">Use</button>`;
-                else if(card === 'Magic Armor') useBtn = `<button class="btn-blue" onclick="useItem(${index}, 'equipArmor')">Equip</button>`;
+            hand.forEach((cardName, index) => {
+                let item = ITEM_DB[cardName] || { ap: 0, desc: "Unknown Item", type: "unknown" };
+                let canAfford = currentAP >= item.ap;
+                let btnClass = canAfford ? "btn-green" : "btn-exhausted";
+                let btnText = item.type === "equip" ? "Equip" : "Use";
                 
                 handHTML += `
-                    <div class="card-item">
-                        <strong>${card}</strong>
+                    <div class="card-item" style="${!canAfford ? 'opacity: 0.6;' : ''}">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <strong style="color:var(--accent-yellow);">${cardName}</strong>
+                            <span style="background:#000; padding:2px 8px; border-radius:12px; font-size:0.8rem; border:1px solid var(--accent-blue); color:var(--accent-blue);">
+                                ${item.ap} AP
+                            </span>
+                        </div>
+                        <div style="font-size:0.85rem; color:#aaa; margin: 4px 0;">${item.desc}</div>
                         <div class="card-actions">
-                            ${useBtn}
-                            <button onclick="discardItem(${index})">Discard</button>
+                            <button class="${btnClass}" ${!canAfford ? 'disabled' : ''} onclick="useItem(${index}, '${cardName}')">${btnText}</button>
+                            <button style="background:#444;" onclick="discardItem(${index})">Discard</button>
                         </div>
                     </div>`;
             });
             document.getElementById('hand-container').innerHTML = handHTML;
         }
-
         function adjustHP(amt) { hp += amt; if(hp>100) hp=100; if(hp<0) hp=0; updatePlayerUI(); }
         
         function takeDamage(rawDmg) {
@@ -359,50 +441,140 @@
         
         function discardItem(idx) { hand.splice(idx, 1); updatePlayerUI(); }
         
-        function useItem(idx, type) {
-            if(type==='heal20') adjustHP(20);
-            if(type==='heal40') adjustHP(40);
-            if(type==='cure') { adjustHP(5); poisonCount=0; slowCount=0; }
-            if(type==='equipArmor') armorEquipped = true;
+        // function useItem(idx, type) {
+        //     if(type==='heal20') adjustHP(20);
+        //     if(type==='heal40') adjustHP(40);
+        //     if(type==='cure') { adjustHP(5); poisonCount=0; slowCount=0; }
+        //     if(type==='equipArmor') armorEquipped = true;
+        //     discardItem(idx);
+        // }
+        
+        // function endTurn() {
+        //     if(poisonCount > 0) { takeDamage(5); poisonCount--; }
+        //     if(slowCount > 0) slowCount--;
+        //     updatePlayerUI();
+            
+        //     const btn = document.querySelector('.end-turn-btn');
+        //     const originalText = btn.innerText;
+        //     btn.innerText = "TURN ENDED";
+        //     btn.style.backgroundColor = "#555";
+        //     setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--accent-blue)"; }, 1000);
+        // }
+        
+        function useItem(idx, cardName) {
+            let item = ITEM_DB[cardName];
+            if (!item) return;
+
+            if (currentAP < item.ap) {
+                alert("Not enough Action Points!");
+                return;
+            }
+
+            currentAP -= item.ap;
+
+            if (item.type === 'heal') {
+                adjustHP(item.val);
+                if (item.cure) { poisonCount = 0; slowCount = 0; }
+            } 
+            else if (item.type === 'equip') {
+                if (item.effect === 'armor_equip') armorEquipped = true;
+                if (item.effect === 'block_50') alert("Steel Shield Active! Manually halve incoming damage this turn.");
+                if (item.effect === 'poison_block') alert("Poison Shield Active! The next entity to hit you takes poison.");
+            } 
+            else if (item.type === 'attack') {
+                alert(`⚔️ You cast/swing ${cardName} for ${item.val || 'an effect'}! (Tell your opponent)`);
+            }
+            else if (item.type === 'utility' || item.type === 'buff') {
+                alert(`✨ You used ${cardName}! (${item.desc})`);
+            }
+
             discardItem(idx);
         }
         
         function endTurn() {
             if(poisonCount > 0) { takeDamage(5); poisonCount--; }
             if(slowCount > 0) slowCount--;
+            
+            currentAP = maxAP; // Reset AP
             updatePlayerUI();
             
             const btn = document.querySelector('.end-turn-btn');
             const originalText = btn.innerText;
-            btn.innerText = "TURN ENDED";
+            btn.innerText = "AP REFRESHED / TURN ENDED";
             btn.style.backgroundColor = "#555";
-            setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--accent-blue)"; }, 1000);
+            setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--accent-blue)"; }, 1500);
         }
         // --- DECKS & BOSS STATE LOGIC ---
-const initRelics = [
-    {n: "Stone Axe", e: "15 Dmg"}, 
-    {n: "Wooden Longbow", e: "20 Dmg (Range: 1 Tile)"},
-    {n: "Steel Sword", e: "20 Dmg"}, 
-    {n: "Enchanted Longbow", e: "35 Dmg (Range: 1 Tile)"},
-    {n: "Greatsword", e: "45 Dmg"}, 
-    {n: "Assassin's Dagger", e: "15 Dmg (Undefendable)"},
-    {n: "Steel Shield", e: "Block 50% Dmg"},
-    // {n: "Poison Shield", e: "Defend & Poison Attacker"}, 
-    // {n: "Life Steal Spell", e: "Heal 50% of Dmg dealt"},
-    {n: "Essence of Life", e: "Heal 20 HP"}, 
-    {n: "Phoenix Tears", e: "Heal 40 HP"}, 
-    {n: "Antidote Potion", e: "Cure Status & +5 HP"},
-    // {n: "Undead Essence", e: "Immune to ALL Status Effects"},
-    {n: "Thorn Garden Spell", e: "5 Dmg to all within 1 Tile"}, 
-    // {n: "Evasion Enchantment", e: "Avoid 1 Attack"},
-    // {n: "Magic Boots", e: "+3 Movement"}, 
-    {n: "Teleportation Crystal", e: "Jump to previous Camp"}, 
-    {n: "Slow Curse", e: "Target halves movement rolls (2 turns)"},
-    {n: "Invisibility Dust", e: "Instantly end combat/flee"}
-];
+// const initRelics = [
+//     {n: "Stone Axe", e: "15 Dmg"}, 
+//     {n: "Wooden Longbow", e: "20 Dmg (Range: 1 Tile)"},
+//     {n: "Steel Sword", e: "20 Dmg"}, 
+//     {n: "Enchanted Longbow", e: "35 Dmg (Range: 1 Tile)"},
+//     {n: "Greatsword", e: "45 Dmg"}, 
+//     {n: "Assassin's Dagger", e: "15 Dmg (Undefendable)"},
+//     {n: "Steel Shield", e: "Block 50% Dmg"},
+//     // {n: "Poison Shield", e: "Defend & Poison Attacker"}, 
+//     // {n: "Life Steal Spell", e: "Heal 50% of Dmg dealt"},
+//     {n: "Essence of Life", e: "Heal 20 HP"}, 
+//     {n: "Phoenix Tears", e: "Heal 40 HP"}, 
+//     {n: "Antidote Potion", e: "Cure Status & +5 HP"},
+//     // {n: "Undead Essence", e: "Immune to ALL Status Effects"},
+//     {n: "Thorn Garden Spell", e: "5 Dmg to all within 1 Tile"}, 
+//     // {n: "Evasion Enchantment", e: "Avoid 1 Attack"},
+//     // {n: "Magic Boots", e: "+3 Movement"}, 
+//     {n: "Teleportation Crystal", e: "Jump to previous Camp"}, 
+//     {n: "Slow Curse", e: "Target halves movement rolls (2 turns)"},
+//     {n: "Invisibility Dust", e: "Instantly end combat/flee"}
+// ];
 
-// Armor handled separately to keep quantity at 1 in the deck
-const armorCard = {n:"Magic Armor", e:"Passive: -5 Dmg (3 Uses)"};
+// // Armor handled separately to keep quantity at 1 in the deck
+// const armorCard = {n:"Magic Armor", e:"Passive: -5 Dmg (3 Uses)"};
+
+// --- DECKS & BOSS STATE LOGIC ---
+const ITEM_DB = {
+    // Offensive
+    "Stone Axe": { ap: 1, type: "attack", stance: "attack", pool: "relic", val: 15, desc: "15 Dmg" },
+    "Steel Sword": { ap: 1, type: "attack", stance: "attack", pool: "relic", val: 20, desc: "20 Dmg" },
+    "Wooden Longbow": { ap: 1, type: "attack", stance: "attack", pool: "relic", val: 20, range: 1, desc: "20 Dmg | Range: 1 Tile" },
+    "Enchanted Longbow": { ap: 2, type: "attack", stance: "attack", pool: "relic", val: 35, range: 1, desc: "35 Dmg | Range: 1 Tile" },
+    "Greatsword": { ap: 3, type: "attack", stance: "attack", pool: "relic", val: 45, desc: "45 Dmg" },
+    "Assassin's Dagger": { ap: 1, type: "attack", stance: "attack", pool: "relic", val: 15, pierce: true, desc: "15 Dmg | Undefendable" },
+    "Slow Curse": { ap: 1, type: "attack", stance: "attack", pool: "relic", effect: "slow_enemy", desc: "Target halves movement (2 turns)" },
+    "Thorn Garden Spell": { ap: 2, type: "attack", stance: "attack", pool: "relic", val: 5, aoe: true, desc: "5 Dmg to all within 1 Tile" },
+    "Corrosive Venom Sac": { ap: 1, type: "attack", stance: "attack", pool: "boss", val: 10, effect: "poison_enemy", desc: "10 Dmg + Poisons Target" },
+
+    // Defensive
+    "Steel Shield": { ap: 1, type: "equip", stance: "defense", pool: "relic", effect: "block_50", desc: "Block 50% Dmg this round" },
+    "Magic Armor": { ap: 1, type: "equip", stance: "defense", pool: "relic", effect: "armor_equip", desc: "Passive: -5 Dmg until shattered" },
+    "Poison Shield": { ap: 2, type: "equip", stance: "defense", pool: "monster", effect: "poison_block", desc: "Defend & Poison Attacker" },
+    "Titan's Core": { ap: 0, type: "equip", stance: "defense", pool: "boss", effect: "perfect_block", desc: "Take 0 Damage this round (No Exhaust)" },
+
+    // Neutral / Utility
+    "Antidote Potion": { ap: 1, type: "heal", stance: "neutral", pool: "relic", val: 5, cure: true, desc: "Cure Status & +5 HP" },
+    "Essence of Life": { ap: 1, type: "heal", stance: "neutral", pool: "relic", val: 20, desc: "Heal 20 HP" },
+    "Phoenix Tears": { ap: 2, type: "heal", stance: "neutral", pool: "relic", val: 40, desc: "Heal 40 HP" },
+    "Evasion Enchantment": { ap: 2, type: "buff", stance: "neutral", pool: "monster", effect: "evasion", desc: "Avoid 1 Attack" },
+    "Life Steal Spell": { ap: 2, type: "buff", stance: "neutral", pool: "monster", effect: "lifesteal", desc: "Heal 50% of Dmg dealt" },
+    "Teleportation Crystal": { ap: 2, type: "utility", stance: "neutral", pool: "relic", effect: "teleport", desc: "Jump to previous Camp" },
+    "Invisibility Dust": { ap: 2, type: "utility", stance: "neutral", pool: "relic", effect: "flee", desc: "Instantly end combat/flee" },
+    "Magic Boots": { ap: 1, type: "utility", stance: "neutral", pool: "monster", effect: "movement", desc: "+3 Movement on next roll" },
+    "Undead Essence": { ap: 2, type: "buff", stance: "neutral", pool: "monster", effect: "immune", desc: "Immune to Status Effects this turn" }
+};
+
+function generateRelicDeck() {
+    let generatedDeck = [];
+    for (const [itemName, itemData] of Object.entries(ITEM_DB)) {
+        if (itemData.pool === "relic") {
+            let copies = (itemName === "Magic Armor") ? 1 : 3;
+            for (let i = 0; i < copies; i++) {
+                // Store object to match drawCard logic
+                generatedDeck.push({ n: itemName, e: itemData.desc }); 
+            }
+        }
+    }
+    return shuffle(generatedDeck);
+}
+
 const initMonsters = [
             {n:"Goblin Thief", t:"3", p:"Discard 1 card", r:"Magic Boots"},
             {n:"Giant Spider", t:"4", p:"5 Dmg + Poison", r:"Poison Shield"},
@@ -429,8 +601,13 @@ const initBosses = [
         let relicDeck = []; let monsterDeck = []; let bossDeck = [];
         
         function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+        // function setupDecks() {
+        //     relicDeck = shuffle([...initRelics, ...initRelics, ...initRelics, armorCard]); 
+        //     monsterDeck = shuffle([...initMonsters, ...initMonsters, ...initMonsters]);
+        //     bossDeck = shuffle([...initBosses]);
+        // }
         function setupDecks() {
-            relicDeck = shuffle([...initRelics, ...initRelics, ...initRelics, armorCard]); 
+            relicDeck = generateRelicDeck(); 
             monsterDeck = shuffle([...initMonsters, ...initMonsters, ...initMonsters]);
             bossDeck = shuffle([...initBosses]);
         }
@@ -642,7 +819,7 @@ if(type === 'boss') {
 
         function triggerStandardAttack() {
             // Uses a native dialog interrupt instead of a web form to keep the UI clean
-            let dmgInput = prompt("Enter the damage of your equipped Relic/Weapon:", "15");
+            let dmgInput = prompt("Enter the damage of your equipped Relic/Weapon:", "10");
             let pDmg = parseInt(dmgInput);
             if (isNaN(pDmg) || pDmg < 0) return; // Cancelled
             executeClash('attack', 0, pDmg);
@@ -843,17 +1020,305 @@ if(type === 'boss') {
         }
 
         // --- NAVIGATION LOGIC ---
+        // function switchTab(tab) {
+        //     document.getElementById('tab-player').classList.remove('active');
+        //     document.getElementById('tab-decks').classList.remove('active');
+        //     document.getElementById('nav-player').classList.remove('active');
+        //     document.getElementById('nav-decks').classList.remove('active');
+            
+        //     document.getElementById('tab-' + tab).classList.add('active');
+        //     document.getElementById('nav-' + tab).classList.add('active');
+        // }
+        // --- NAVIGATION LOGIC ---
         function switchTab(tab) {
             document.getElementById('tab-player').classList.remove('active');
             document.getElementById('tab-decks').classList.remove('active');
+            document.getElementById('tab-arena').classList.remove('active');
             document.getElementById('nav-player').classList.remove('active');
             document.getElementById('nav-decks').classList.remove('active');
+            document.getElementById('nav-arena').classList.remove('active');
             
             document.getElementById('tab-' + tab).classList.add('active');
             document.getElementById('nav-' + tab).classList.add('active');
+            
+            if (tab === 'arena') {
+                renderArena();
+            }
+        }
+        updatePlayerUI();
+// --- PVP ARENA ENGINE STATE ---
+        let pvpPhase = 1; // 1: Select, 2: Locked, 3: Reveal & Calculate
+        let pvpStance = null; 
+        let pvpStagedAP = 3;
+        let pvpStagedActions = []; 
+        
+        // New variables for the visual calculator
+        let pvpPendingHPChange = 0;
+        let pvpPendingPoison = false;
+
+        // Core Renderer for the Arena Tab
+        function renderArena() {
+            const container = document.getElementById('arena-stage');
+            
+            if (pvpPhase === 1) {
+                // --- PHASE 1: ACTION SELECTION ---
+                let handHTML = '';
+                hand.forEach((cardName, idx) => {
+                    let item = ITEM_DB[cardName] || { ap: 0, stance: "neutral", desc: "Unknown" };
+                    let isAlreadyStaged = pvpStagedActions.some(a => a.idx === idx);
+                    
+                    let stanceLocked = (pvpStance === 'attack' && item.stance === 'defense') || 
+                                       (pvpStance === 'defense' && item.stance === 'attack');
+                    let canAfford = pvpStagedAP >= item.ap;
+                    let isClickable = !stanceLocked && canAfford && !isAlreadyStaged;
+
+                    handHTML += `
+                        <div class="card-item" style="padding: 8px; margin-bottom: 6px; ${!isClickable && !isAlreadyStaged ? 'opacity: 0.3;' : ''}">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <strong style="color:var(--accent-yellow); font-size:0.95rem;">${cardName}</strong>
+                                    <div style="font-size:0.75rem; color:#aaa;">[${item.stance.toUpperCase()}] - ${item.desc}</div>
+                                </div>
+                                ${isAlreadyStaged ? 
+                                    `<button style="width:auto; padding: 6px 12px; font-size:0.8rem; background:#ef4444;" onclick="unstageArenaItem(${idx})">Remove</button>` :
+                                    `<button class="${isClickable ? 'btn-blue' : 'btn-exhausted'}" style="width:auto; padding: 6px 12px; font-size:0.8rem;" ${!isClickable ? 'disabled' : ''} onclick="stageArenaItem(${idx}, '${cardName}')">+ Stg (${item.ap} AP)</button>`
+                                }
+                            </div>
+                        </div>`;
+                });
+
+                let baseAttackValid = (pvpStance !== 'defense' && pvpStagedAP >= 1 && !pvpStagedActions.some(a => a.type === 'base_attack'));
+                let baseDefendValid = (pvpStance !== 'attack' && pvpStagedAP >= 1 && !pvpStagedActions.some(a => a.type === 'base_defend'));
+
+                container.innerHTML = `
+                    <div class="section" style="background:#16161e; text-align:center; padding:12px; border: 1px solid var(--accent-blue);">
+                        <span style="font-size:0.85rem; color:#aaa;">STAGED AP REMAINING:</span>
+                        <div style="font-size:2.5rem; font-weight:bold; color:var(--accent-blue);">${pvpStagedAP} / ${maxAP}</div>
+                    </div>
+
+                    <div class="section">
+                        <h4>Base Stances (Choose 1 max)</h4>
+                        <div class="grid-2">
+                            ${pvpStagedActions.some(a => a.type === 'base_attack') ?
+                                `<button class="btn-red" onclick="unstageBaseAction('base_attack')">Remove Base Attack</button>` :
+                                `<button class="btn-red" ${!baseAttackValid ? 'disabled style="opacity:0.3;"' : ''} onclick="stageBaseAction('attack')">⚔️ Base Attack (1 AP)</button>`
+                            }
+                            ${pvpStagedActions.some(a => a.type === 'base_defend') ?
+                                `<button class="btn-blue" onclick="unstageBaseAction('base_defend')">Remove Base Defend</button>` :
+                                `<button class="btn-blue" ${!baseDefendValid ? 'disabled style="opacity:0.3;"' : ''} onclick="stageBaseAction('defend')">🛡️ Base Defend (1 AP)</button>`
+                            }
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4>Staged Spells & Items</h4>
+                        ${pvpStagedActions.length === 0 ? '<p style="color:#666; font-size:0.9rem; margin:0;">No actions staged yet...</p>' : ''}
+                        <div id="arena-staged-list" style="margin-bottom:10px;">
+                            ${pvpStagedActions.map(a => `<div style="font-size:0.9rem; padding:4px 0; border-bottom:1px solid #333; color:var(--accent-green);">✔️ ${a.name} (${a.cost} AP)</div>`).join('')}
+                        </div>
+                        <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
+                        <h5>My Card Inventory</h5>
+                        ${hand.length === 0 ? '<p style="color:#565656; font-size:0.85rem;">Inventory empty.</p>' : handHTML}
+                    </div>
+
+                    <button class="btn-green" style="padding:18px;" onclick="lockInArenaChoices()">🔒 LOCK IN CHOICES</button>
+                `;
+            } 
+            else if (pvpPhase === 2) {
+                // --- PHASE 2: LOCKED SELECTION SCREEN ---
+                container.innerHTML = `
+                    <div class="section" style="text-align:center; padding:40px 20px; background:#0b0b0f; border: 2px dashed #444;">
+                        <div style="font-size:4rem; margin-bottom:10px;">🔒</div>
+                        <h2 style="color:#aaa; margin-bottom:5px;">CHOICES HIDDEN</h2>
+                        <p style="color:#666; font-size:0.95rem; margin:0 0 25px 0;">Hold phone up or place face up on board. Press reveal together.</p>
+                        
+                        <button class="btn-red" style="font-size:1.4rem; padding:20px; margin-bottom:15px;" onclick="pvpPhase = 3; renderArena();">👁️ REVEAL SCREEN</button>
+                        <button style="background:transparent; color:#888; font-size:0.9rem;" onclick="pvpPhase = 1; renderArena();">↩ Cancel & Edit Choices</button>
+                    </div>
+                `;
+            } 
+            else if (pvpPhase === 3) {
+                // --- PHASE 3: THE REVEAL & CALCULATOR ---
+                
+                // Calculate projected HP for visual feedback
+                let projectedHP = hp + pvpPendingHPChange;
+                if (projectedHP > 100) projectedHP = 100;
+                if (projectedHP < 0) projectedHP = 0;
+                
+                let hpColor = (projectedHP < hp) ? "var(--accent-red)" : (projectedHP > hp) ? "var(--accent-green)" : "white";
+                let mathText = pvpPendingHPChange > 0 ? `+${pvpPendingHPChange}` : pvpPendingHPChange === 0 ? "0" : `${pvpPendingHPChange}`;
+
+                container.innerHTML = `
+                    <div class="section" style="border: 2px solid var(--accent-yellow); background:#111; margin-bottom:15px;">
+                        <h3 style="color:var(--accent-yellow); margin-top:0; text-align:center; letter-spacing:1px;">MY ACTION REVEAL</h3>
+                        
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;">
+                            ${pvpStagedActions.map(a => `
+                                <div style="background:#1a1a24; padding:12px; border-radius:6px; border-left:4px solid var(--accent-blue);">
+                                    <div style="font-weight:bold; font-size:1.1rem; color:white;">${a.name.toUpperCase()}</div>
+                                    <div style="font-size:0.9rem; color:#ccc; margin-top:2px;">${a.text}</div>
+                                </div>
+                            `).join('')}
+                            ${pvpStagedActions.length === 0 ? '<div style="text-align:center; color:#ef4444; font-weight:bold;">⚠️ NO ACTIONS TAKEN (AP WASTED)</div>' : ''}
+                        </div>
+
+                        <div style="background:#222; padding:10px; border-radius:6px; font-size:0.85rem; color:#aaa; line-height:1.4;">
+                            <strong>Stance Resolution Matrix:</strong><br>
+                            • Basic Attack vs Basic Attack: Both take 10 DMG.<br>
+                            • Basic Attack vs Basic Defend: Play RPS! (Attacker wins = Defender takes 10 DMG. Defender wins = Defender heals +10 HP).<br>
+                            • Basic Defend vs Basic Defend: Stalemate.<br>
+                            • Defend vs Weapon Items: Defender takes (Weapon DMG - 10) DMG.
+                        </div>
+                    </div>
+
+                    <div class="section" style="text-align:center; background:#16161e; border: 1px solid #444;">
+                        <h3 style="margin-top:0; color:#888;">RESOLUTION CALCULATOR</h3>
+                        
+                        <div style="display:flex; justify-content:center; align-items:center; gap:15px; margin-bottom:15px; background:#000; padding:10px; border-radius:8px;">
+                            <div style="text-align:right;">
+                                <div style="font-size:0.8rem; color:#666;">CURRENT</div>
+                                <div style="font-size:2rem; color:#888;">${hp}</div>
+                            </div>
+                            <div style="font-size:2rem; color:#444;">➔</div>
+                            <div style="text-align:left;">
+                                <div style="font-size:0.8rem; color:${hpColor};">NEW HP (${mathText})</div>
+                                <div style="font-size:3rem; font-weight:bold; color:${hpColor}; line-height:1;">${projectedHP}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom:15px;">
+                            <div style="font-size:0.8rem; font-weight:bold; color:#ef4444; margin-bottom:4px; text-align:left;">INFLICT DAMAGE:</div>
+                            <div class="grid-4">
+                                <button class="btn-red" style="padding:12px 0;" onclick="stagePvPMath(-20)">-20</button>
+                                <button class="btn-red" style="padding:12px 0;" onclick="stagePvPMath(-15)">-15</button>
+                                <button class="btn-red" style="padding:12px 0;" onclick="stagePvPMath(-10)">-10</button>
+                                <button class="btn-red" style="padding:12px 0;" onclick="stagePvPMath(-5)">-5</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:15px;">
+                            <div style="font-size:0.8rem; font-weight:bold; color:var(--accent-green); margin-bottom:4px; text-align:left;">APPLY HEALING / STANCE BONUS:</div>
+                            <div class="grid-2">
+                                <button class="btn-green" style="padding:12px 0;" onclick="stagePvPMath(10)">+10 HP (RPS Win)</button>
+                                <button class="btn-green" style="padding:12px 0;" onclick="stagePvPMath(5)">+5 HP</button>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <button style="flex:1; padding:12px; background:${pvpPendingPoison ? 'var(--accent-green)' : '#222'}; color:${pvpPendingPoison ? '#000' : '#aaa'}; border:1px solid var(--accent-green);" onclick="togglePvPPoison()">
+                                ${pvpPendingPoison ? '✔️ Poison Applied' : '+ Apply Poison'}
+                            </button>
+                            <button style="flex:0.5; background:#333; color:#aaa; font-size:0.9rem;" onclick="resetPvPMath()">↺ Reset Math</button>
+                        </div>
+
+                        <button class="btn-blue" style="padding:18px; font-size:1.3rem; width:100%;" onclick="processPvpRoundResolution()">🏁 COMMIT CHANGES</button>
+                    </div>
+                `;
+            } 
+        }
+        // Phase 1 Logic Processors
+        function stageBaseAction(type) {
+            if (type === 'attack') {
+                pvpStagedActions.push({ type: 'base_attack', name: 'Base Attack', cost: 1, text: 'Deals 10 Damage to opponent.' });
+                pvpStance = 'attack';
+            } else {
+                pvpStagedActions.push({ type: 'base_defend', name: 'Base Defend', cost: 1, text: 'Triggers Defense calculations. Blocks 10 Dmg vs Items.' });
+                pvpStance = 'defense';
+            }
+            pvpStagedAP -= 1;
+            renderArena();
         }
 
-        updatePlayerUI();
+        function unstageBaseAction(type) {
+            pvpStagedActions = pvpStagedActions.filter(a => a.type !== type);
+            pvpStagedAP += 1;
+            if (!pvpStagedActions.some(a => a.type === 'base_attack' || a.type === 'base_defend' || (ITEM_DB[a.name] && ITEM_DB[a.name].stance !== 'neutral'))) {
+                pvpStance = null;
+            }
+            renderArena();
+        }
+
+        function stageArenaItem(handIdx, cardName) {
+            let item = ITEM_DB[cardName];
+            pvpStagedActions.push({ idx: handIdx, type: 'item', name: cardName, cost: item.ap, text: item.desc });
+            pvpStagedAP -= item.ap;
+            if (item.stance !== 'neutral') pvpStance = item.stance;
+            renderArena();
+        }
+
+        function unstageArenaItem(handIdx) {
+            let action = pvpStagedActions.find(a => a.idx === handIdx);
+            pvpStagedAP += action.cost;
+            pvpStagedActions = pvpStagedActions.filter(a => a.idx !== handIdx);
+            
+            // Recalculate Stance Limiters
+            let hasAttack = pvpStagedActions.some(a => a.type === 'base_attack' || (ITEM_DB[a.name] && ITEM_DB[a.name].stance === 'attack'));
+            let hasDefense = pvpStagedActions.some(a => a.type === 'base_defend' || (ITEM_DB[a.name] && ITEM_DB[a.name].stance === 'defense'));
+            pvpStance = hasAttack ? 'attack' : (hasDefense ? 'defense' : null);
+            renderArena();
+        }
+
+        function lockInArenaChoices() {
+            pvpPhase = 2;
+            renderArena();
+        }
+        // Phase 3 Calculator Functions
+        function stagePvPMath(amt) {
+            pvpPendingHPChange += amt;
+            renderArena();
+        }
+
+        function togglePvPPoison() {
+            pvpPendingPoison = !pvpPendingPoison;
+            renderArena();
+        }
+
+        function resetPvPMath() {
+            pvpPendingHPChange = 0;
+            pvpPendingPoison = false;
+            renderArena();
+        }
+
+        // Phase 4 Finalizing Logic Engine
+        // Phase 3 Finalizing Logic Engine
+        function processPvpRoundResolution() {
+            // 1. Apply the Pending Math visually generated in the calculator
+            hp += pvpPendingHPChange;
+            if (hp > 100) hp = 100;
+            if (hp < 0) hp = 0;
+
+            if (pvpPendingPoison) {
+                addStatus('poison');
+            }
+
+            // 2. Process deletions out of inventory for things actually consumed
+            let itemsToDiscard = pvpStagedActions.filter(a => a.type === 'item').map(a => a.idx);
+            itemsToDiscard.sort((a, b) => b - a);
+            itemsToDiscard.forEach(idx => hand.splice(idx, 1));
+
+            // 3. Process Environmental Poison if it ticks on player
+            if (poisonCount > 0 && !pvpPendingPoison) { 
+                // Only tick down existing poison if they weren't JUST poisoned this round
+                hp -= 5;
+                poisonCount--;
+                if(hp < 0) hp = 0;
+            }
+
+            // 4. Officialize persistent state values
+            currentAP = pvpStagedAP; // Inherit remaining AP deductions
+            currentAP = maxAP;       // Automatically refresh up to max for the next turn loop
+
+            // 5. Flush states for the next round loop
+            pvpPhase = 1;
+            pvpStance = null;
+            pvpStagedAP = maxAP;
+            pvpStagedActions = [];
+            pvpPendingHPChange = 0;
+            pvpPendingPoison = false;
+
+            updatePlayerUI();
+            renderArena();
+        }
     </script>
 </body>
 </html>
